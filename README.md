@@ -31,7 +31,7 @@ privacy_ui/
 ├─ README.md
 ├─ requirements.txt
 ├─ .gitignore
-└─ records/        # 실행 시 자동 생성, GitHub 업로드 제외
+└─ records/        
 ```
 
 ## 모델 파일
@@ -60,7 +60,7 @@ set KEY_ZIP_PASSWORD=본인이_정한_비밀번호
 python app.py
 ```
 
-비밀번호는 GitHub README나 소스코드에 실제 값으로 기록하지 마세요.
+
 
 ## 실행
 프로그램 실행 후 카메라 소스에 다음 중 하나를 입력합니다.
