@@ -68,7 +68,7 @@ BASE_DIR = os.path.join(APP_DIR, "records")
 BLUR_DIR = os.path.join(BASE_DIR, "blur")
 ORG_DIR = os.path.join(BASE_DIR, "original_enc")
 KEY_DIR = os.path.join(BASE_DIR, "keys")
-KEY_ZIP_PASSWORD = "cabston!"
+KEY_ZIP_PASSWORD = os.environ.get("KEY_ZIP_PASSWORD")
 os.makedirs(BLUR_DIR, exist_ok=True)
 os.makedirs(ORG_DIR, exist_ok=True)
 os.makedirs(KEY_DIR, exist_ok=True)
@@ -344,8 +344,15 @@ class VideoWorker(QThread):
             zf.setpassword(enc_key.encode())
             zf.write(mp4_path, arcname=os.path.basename(mp4_path))
 
-        # 2) 암호키 파일 ZIP: records/keys에 따로 저장하고 고정 비밀번호 cabston!으로 AES 암호화
-        #    평문 .key.txt 파일을 디스크에 만들지 않고, 암호화 ZIP 내부에 바로 기록한다.
+        # 2) 암호키 파일 ZIP: 환경변수 KEY_ZIP_PASSWORD로 AES 암호화
+        #    비밀번호를 소스코드에 직접 저장하지 않아 공개 저장소에서도 노출되지 않도록 한다.
+        if not KEY_ZIP_PASSWORD:
+            os.remove(mp4_path) if os.path.exists(mp4_path) else None
+            raise RuntimeError(
+                "KEY_ZIP_PASSWORD 환경변수가 설정되지 않았습니다. "
+                "프로그램 실행 전에 암호키 ZIP 보호용 비밀번호를 환경변수로 설정하세요."
+            )
+
         with pyzipper.AESZipFile(
             key_zip_path,
             "w",
